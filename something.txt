@@ -1,0 +1,81 @@
+cd itransition_course\course_project
+
+npm start - to run client
+nodemon index.js - to run server
+
+
+anton.mikhailouski@gmail.com - 123 - $2a$10$/l8VYFuxScCvMW8MG71U9uSO7fWMiQvbwBJsnJ53rcoYXf9hyAveW - admin 
+zuika@gmail.com              - 1   - $2a$10$t32pwHUbwgSArkIGMNUNRO1r5fh6AheN5zGEg0PRsZSuphujNQUfO - user  
+katya@gmail.com              - 2   - $2a$10$jVxpn0F9c5Kj24ZIl9tSdu0NYUjT3dd423WW6wAabl.idQz30jBS2 - user
+
+
+
+
+
+
+картинки хранятся на igmur.com
+
+
+
+
+
+https://drive.google.com/file/d/17WpQ-Sh_T-aa5j3WJXpQLqWKyGnQwyyV/view?usp=sharing
+
+Вместо 'file/d/' вставить 'uc?export=view&id='. Далее айди картинки, а '/view?usp=sharing' просто удалить.
+И картинку можно использовать где угодно.
+
+https://drive.google.com/uc?export=view&id=17WpQ-Sh_T-aa5j3WJXpQLqWKyGnQwyyV
+
+
+https://drive.google.com/uc?export=view&id=1xLU2_hBMDbCJ-aJvZqRqPVNlNjnjShtl
+
+
+
+
+{/*<div className="container mt-5">
+        <div className="d-flex justify-content-between align-items-center">
+          <h2>Top 5 collections</h2>
+          
+        </div>
+
+        
+        <ul className="list-group">
+          {collections.map(collection => (
+            
+            <li key={collection.id} className="list-group-item col-md-4 mb-4 collectionCard p-0">
+
+              <Link to={`/collections/${collection.id}`} className="linkToCollection" style={{ textDecoration: 'none' }}>
+
+                <div className="img_container">
+                  {collection.image_url && (<img src={collection.image_url} alt={collection.title}/>)}
+                </div>
+
+                <div className="d-flex justify-content-between">
+
+                  <div>
+                    <h4 className="cardHeader mt-1 ms-2 mb-0 pb-0" style={{ marginBottom: '0' }}>{collection.title}</h4>
+                    <p className="itemsNum text-muted ms-2 ">
+                      items in collection: {collection.itemCount}
+                    </p>
+                  </div>
+
+                  <div className="d-flex me-1 align-items-center">
+                  
+                    <button className="btn" onClick={handleComment} style={{ border: 'none' }}>
+                      <i className="bi bi-chat fs-2 text-dark"></i>
+                    </button>
+                    <button className="btn justify-content-center align-items-center" onClick={(e) => toggleLike(e, collection.id)} style={{ border: 'none' }}>
+                      <i className={`bi ${collection.isLiked ? 'bi-heart-fill text-danger' : 'bi-heart text-dark'} fs-2`}></i> 
+                    </button>
+                    <span className="ms-0"><p className="likeCounter mb-0 me-2">{collection.likesCount}</p></span>
+                  </div>
+
+                </div>
+
+              </Link>
+
+            </li>
+
+          ))}
+        </ul>
+      </div>*/}
