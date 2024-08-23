@@ -1,0 +1,88 @@
+body {
+  background-color: #f8f9fa;
+}
+.container {
+  margin-top: 50px;
+}
+
+.list-group{
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.list-group-item{
+  /*width: 400px;
+  height: 465px;*/
+}
+
+.collectionCard{
+  width: 400px;
+  height: 465px;
+  /*margin-bottom: 200px;*/
+}
+
+
+.linkToCollection {
+  display: block;
+  cursor: default;
+}
+
+.img_container{
+  background-color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.img_container img{
+  width: 400px;
+  height: 400px; 
+  object-fit: cover;
+  padding: 0;
+  margin: 0;
+  border: none; 
+}
+
+.likeCounter {
+  font-size: 1.3rem;
+}
+
+.itemsNum {
+  font-style: italic;
+  font-size: 1.0rem;
+}
+
+.cardHeader {
+  color: black;
+  display: flex; /* Убедитесь, что размер элемента соответствует содержимому */
+  margin: 0;
+  padding: 0;
+  width: auto; /* По умолчанию ширина авто, если нет необходимости в фиксированной ширине */
+  height: auto;
+}
+
+.likeCounter {
+  color: black;
+}
+
+
+
+.categoryVC{
+  font-size: 1.1rem;
+}
+
+.itemCountVC {
+  font-size: 1.1rem;
+}
+
+.collectionViewBlock {
+  cursor: default;
+}
+
+.linkToProfileVC {
+  cursor: pointer;
+}
