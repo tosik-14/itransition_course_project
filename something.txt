@@ -1,5 +1,7 @@
 cd itransition_course\course_project
 
+E:\itransition_course\course_project\client
+
 npm start - to run client
 nodemon index.js - to run server
 
@@ -9,7 +11,14 @@ zuika@gmail.com              - 1   - $2a$10$t32pwHUbwgSArkIGMNUNRO1r5fh6AheN5zGE
 katya@gmail.com              - 2   - $2a$10$jVxpn0F9c5Kj24ZIl9tSdu0NYUjT3dd423WW6wAabl.idQz30jBS2 - user
 
 
+git init
+git add .
+git commit -m "Initial commit"
+git remote add https://github.com/tosik-14/itransition_course_project.git
+git push -u origin main
 
+rm client
+cp -r E:\itransition_course\course_project\client ./client
 
 
 
