@@ -292,7 +292,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
       console.error('delete file error ', err);
       throw err;
     }
-
+    
   }
 
 };
