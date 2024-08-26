@@ -7,6 +7,7 @@ const collectionEditViewRoutes = require('./routes/collectionEditView');
 const collectionsRoutes = require('./routes/collections');
 const userRoutes = require('./routes/users');
 const commentsRoutes = require('./routes/comments');
+const tagsRoutes = require('./routes/tagsRoutes');
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -23,6 +24,7 @@ app.use('/api/collectionEditView', collectionEditViewRoutes);
 app.use('/api/collections', collectionsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentsRoutes);
+app.use('/api/tags', tagsRoutes);
 
 // Обработка ошибок
 app.use((err, req, res, next) => {

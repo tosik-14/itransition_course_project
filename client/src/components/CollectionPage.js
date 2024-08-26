@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
 
-import { getUserName, getCollections, getLike, setComment } from './utility';
+import { getUserName, getUserRole, getCollections, getLike, setComment, deleteCollection } from './utility';
 
 import logo_light from '../images/logo_light.jpg'
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -16,8 +16,11 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const CollectionPage = () => {
   const { id } = useParams(); //тут берется id нужной коллекции
   const navigate = useNavigate();
+  
   const [userName, setUserName] = useState('');
   const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState('');
+
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [collection, setCollection] = useState(null);
@@ -30,6 +33,7 @@ const CollectionPage = () => {
       setComments(collection.comments);
     }
     getUserName(setUserName, setUserId);
+    getUserRole(setUserRole);
     getCollections(setCollection, '/api/collectionEditView/viewCollection', id);
   }, [navigate, isLiked, likesCount, id]); /*, collection*/
 
@@ -42,6 +46,19 @@ const CollectionPage = () => {
   const handleProfile = () => {
     navigate(`/profile/${userId}`);
   };
+  const handleSomeoneProfile = (ownerid) => {
+    console.log('id', ownerid);
+    navigate(`/profile/${ownerid}`);
+  };
+  const handleEditCollection = () => {
+    navigate(`/collections/edit/${id}`);
+  };
+  const handleDeleteCollection = async () => {
+    //const alert = window.confirm(' you want to delete this collection?');
+    deleteCollection(id);
+    navigate(`/profile/${userId}`);
+  };
+  
   const handleSubmitComment = async () => {
     const res = await setComment(id, newComment); 
     if (res && res.data){
@@ -57,7 +74,7 @@ const CollectionPage = () => {
 
     try{
       const res = await getLike(id, setIsLiked);
-      //console.error('step 1', res);
+      console.error('step 1', res, isLiked);
       if(res.status != 200){
         setIsLiked(prev => !prev);
         setLikesCount(prev => isLiked ? prev + 1 : prev - 1);
@@ -104,25 +121,40 @@ const CollectionPage = () => {
 
       <div className="container mt-5 collectionViewBlock">                         {/*start collection block*/}
 
-        <div className="d-flex align-items-start">
-          <h2 className="mb-1">{collection.title}</h2>
+        <div className="d-flex justify-content-between align-items-start">
+          <span className="d-flex justify-content-center">
+            <h2 className="mb-1">{collection.title}</h2>
 
           <p className="categoryVC mt-2 mb-0 ms-4">
             / category:
-            <Link to={`/profile/${userId}`} className="linkToProfileVC text-muted text-black" style={{ textDecoration: 'none' }}> {/*`/profile/${tag.id}`*/}
+            <Link to={() => handleSomeoneProfile(collection.user.id)} className="linkToProfileVC text-muted text-black" style={{ textDecoration: 'none' }}> {/*`/profile/${tag.id}`*/}
               <b>{collection.category?.name}</b>
             </Link> / owner:
              
           </p>
 
-          <Link to={`/profile/${userId}`} className="linkToProfileVC text-black ms-4" style={{ textDecoration: 'none' }}>
-            <h2>{userName}</h2>
+          <Link to={`/profile/${collection.user?.id}`} className="linkToProfileVC text-black ms-4" style={{ textDecoration: 'none' }}>
+            <h2>{collection.user?.name}</h2>
           </Link>
+          </span>
+          
+
+
+          {userId === collection.user?.id || userRole === 'admin' && (
+            <div className="d-flex justify-content-start me-2">
+              <button className="btn btn-primary me-2" onClick={handleEditCollection}>
+                Edit
+              </button>
+              <button className="btn btn-danger" onClick={handleDeleteCollection}>
+                Delete
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="d-flex">
           <div className="me-4">
-            <div className="img_container mb-0" style={{ maxWidth: '800px', maxHeight: '800px', overflow: 'hidden' }}>
+            <div className="img_containerCP mb-0" style={{ maxWidth: '800px', maxHeight: '800px', overflow: 'hidden' }}>
               {collection.image_url && (
                 <img
                   src={collection.image_url}

@@ -18,7 +18,9 @@ function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/collections/:id" element={<CollectionPage />} />
         <Route path="/collections/create" element={<CreateCollection />} />
+        
         <Route path="/collections/edit/:id" element={<CreateCollection />} />
+
         <Route path="/profile/:profileId" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

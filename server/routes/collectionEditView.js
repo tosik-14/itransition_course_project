@@ -32,6 +32,13 @@ router.get('/viewCollection', async (req, res) => {
           model: Category,
           attributes: ['id', 'name']
         },
+
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'name']
+        },
+
         {
           model: Item,
           attributes: ['id', 'name'],
@@ -63,6 +70,7 @@ router.get('/viewCollection', async (req, res) => {
       group: [
         'Collection.id',
         'Category.id',
+        'owner.id',
         'Items.id',
         'Items.Tags.id',
         'Comments.id',
@@ -89,6 +97,7 @@ router.get('/viewCollection', async (req, res) => {
       isLiked,
       itemCount: collection.get('itemsCount'),
       category: collection.Category,
+      user: collection.owner,
       items: collection.Items.map(item => ({
         id: item.id,
         name: item.name,

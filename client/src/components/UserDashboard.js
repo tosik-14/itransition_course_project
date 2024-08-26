@@ -37,26 +37,7 @@ function UserDashboard() {
     fetchUsers();
   }, [navigate]);
 
-  /*useEffect(() => {
-    const fetchUserName = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
-      try {
-        const response = await axios.get('http://localhost:5000/api/users/me', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-        setUserName(response.data.name); 
-      } catch (err) {
-        console.error('Error fetching user data:', err);
-        localStorage.removeItem('token');
-        navigate('/login');
-      }
-    };
-
-    fetchUserName();
-  }, [navigate]);*/
+  
 
   const handleSelectUser = (id) => {
     setSelectedUsers((prevSelectedUsers) =>
@@ -76,27 +57,51 @@ function UserDashboard() {
 
   const handleAction = async (action) => {
     const token = localStorage.getItem('token');
+    //console.log('step 1', action);
     try {
       const response = await axios.post(`${apiUrl}/api/users/${action}`, { userIds: selectedUsers }, 
                                                                                      { headers: { Authorization: `Bearer ${token}` }});
-      if(response.data.selfBlocked){
+      //console.log('step 1', response.data.selfBlocked);  
+      if(response.data.selfBlocked == true){
         //alert("you blocked yourself");
-        localStorage.removeItem('token');
-        navigate('/login');
+        //localStorage.removeItem('token');
+        navigate(`/profile/${userId}`);
       }
       else{
         setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            selectedUsers.includes(user.id)
-              ? { ...user, status: action === 'block' ? 'blocked' : 'active' }
-              : user
-          )
+          prevUsers.map((user) => {
+            if (selectedUsers.includes(user.id)) {
+              let updatedUser = { ...user };
+
+              // Обновляем роль
+              if (action === 'admin' || action === 'user') {
+                updatedUser.role = action === 'admin' ? 'admin' : 'user';
+              }
+
+              // Обновляем статус
+              if (action === 'block' || action === 'unblock') {
+                updatedUser.status = action === 'block' ? 'blocked' : 'active';
+              }
+
+              return updatedUser;
+            }
+            return user;
+          })
         );
       }
       
       setSelectedUsers([]);
     } catch (err) {
-      alert('Action failed');
+      if (err.response && err.response.data.selfBlocked === false) {
+        navigate(`/profile/${userId}`);
+      } 
+      else if (err.response && err.response.data.selfBlocked === true) { 
+        localStorage.removeItem('token'); 
+        navigate('/login'); 
+      } 
+      else {
+        console.error('error change role to user:', err);
+      }
     }
   };
 
@@ -116,7 +121,13 @@ function UserDashboard() {
       }
       setSelectedUsers([]);
     } catch (err) {
-      alert('Delete failed');
+      if (err.response && err.response.data.selfDeleted === true) { 
+        localStorage.removeItem('token'); 
+        navigate('/login'); 
+      } 
+      else {
+        console.error('error delete user:', err);
+      }
     }
   };
 
@@ -146,9 +157,11 @@ function UserDashboard() {
         <button className="btn btn-secondary me-2" onClick={() => handleAction('unblock')}>
           <img src={unblockIcon} alt="Unblock" style={{ width: '24px', height: '24px' }} />
         </button>
-        <button className="btn btn-danger" onClick={handleDelete}>
+        <button className="btn btn-danger me-5" onClick={handleDelete}>
           <img src={deleteIcon} alt="Delete" style={{ width: '24px', height: '24px' }} />
         </button>
+        <button className="btn btn-danger me-2" onClick={() => handleAction('admin')}>Set Admin</button>
+        <button className="btn btn-primary me-2" onClick={() => handleAction('user')}>Set User</button>
       </div>
       <table className="table table-striped">
         <thead>

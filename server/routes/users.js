@@ -4,11 +4,16 @@ const { User } = require('../models/models');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { getUserId } = require('./utility');
+
 
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'name', 'email', 'role', 'status']
+      attributes: ['id', 'name', 'email', 'role', 'status'],
+      order: [
+        ['role', 'DESC']
+      ]
     });
     res.send(users);
   } catch (error) {
@@ -71,6 +76,10 @@ router.get('/me', async (req, res) => {
   }
 });
 
+
+
+
+
 router.get('/role', async (req, res) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
   if (!token) {
@@ -90,6 +99,67 @@ router.get('/role', async (req, res) => {
 });
 
 
+
+
+
+router.post('/user', async (req, res) => {
+  const currentUserId = getUserId(req, process.env.JWT_KEY);
+  if (currentUserId == null) { 
+    return res.status(401).json({ message: 'user is not authorized' });
+  }
+  
+  try {
+    const { userIds } = req.body;
+
+    //console.log('step 1', userIds); 
+    /*if (userIds.includes(currentUserId)) {
+      return res.status(400).send({ message: 'Admin set role user himself', selfBlocked: true });
+    }*/
+    await User.update(
+      { role: 'user' },
+      { where: { id: userIds } }
+    );
+    
+    if (userIds.includes(currentUserId)) {
+      return res.status(400).send({ message: 'Admin set role user himself', selfBlocked: false});
+    }
+
+
+
+    res.send('Users blocked');
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+
+router.post('/admin', async (req, res) => {
+  const currentUserId = getUserId(req, process.env.JWT_KEY);
+  if (currentUserId == null) { 
+    return res.status(401).json({ message: 'user is not authorized' });
+  }
+  const { userIds } = req.body;
+  console.log('step 1', currentUserId, userIds);
+
+  try {
+    await User.update(
+      { role: 'admin' },
+      { where: { id: userIds } }
+    );
+    res.send('Users updated');
+  } catch (err) {
+    res.status(500).send('Server error set admin');
+  }
+});
+
+
+
+
+
+
+
 router.get('/nameById', async (req, res) => {
   try {
     const currentUserId = req.query.id;
@@ -106,27 +176,25 @@ router.get('/nameById', async (req, res) => {
 
 
 router.post('/block', async (req, res) => {
-  const { userIds } = req.body;
-
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).send('No access');
+  const currentUserId = getUserId(req, process.env.JWT_KEY);
+  if (currentUserId == null) { 
+    return res.status(401).json({ message: 'user is not authorized' });
   }
+  
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
-    const currentUserId = decoded.userId;
+    
+    const { userIds } = req.body;
 
     //console.log('step 1'); 
-    if (userIds.includes(currentUserId)) {
-      return res.status(400).send({ message: 'Admin cant block himself', selfBlocked: true });
-    }
-
     await User.update(
       { status: 'blocked' },
       { where: { id: userIds } }
     );
+
+    if (userIds.includes(currentUserId)) {
+      return res.status(400).send({ message: 'Admin cant block himself', selfBlocked: true });
+    }
 
 
     res.send('Users blocked');
@@ -138,23 +206,20 @@ router.post('/block', async (req, res) => {
 
 
 router.post('/delete', async (req, res) => {
-  const { userIds } = req.body;
-
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).send('No access');
+  const currentUserId = getUserId(req, process.env.JWT_KEY);
+  if (currentUserId == null) { 
+    return res.status(401).json({ message: 'user is not authorized' });
   }
+  
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
-    const currentUserId = decoded.userId;
+    const { userIds } = req.body;
+
+    await User.destroy({ where: { id: userIds } });
 
     if (userIds.includes(currentUserId)) {
       return res.status(400).send({ message: 'Admin cant delete himself', selfDeleted: true });
     }
-
-    await User.destroy({ where: { id: userIds } });
 
     res.send('Users deleted');
   } catch (err) {

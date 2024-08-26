@@ -6,11 +6,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
 import TagsInput from './TagsInput';
 
-import { getUserName, getCollections, getCategories, getTags, uploadImageToImgur } from './utility';
+import deleteIcon from '../images/delete.png'
+
+import { getUserName, getCollections, getCategories, getTags, uploadImageToDropbox, setNewCollection, deleteImageFromDropbox } from './utility';
 
 import logo_light from '../images/logo_light.jpg'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useParams } from 'react-router-dom'; //доступ к параметрам url
+
+const slugify = require('slugify');
 
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -39,28 +43,48 @@ const CreateCollection = () => {
 
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  //const [uploadNewPict, setUploadNewPict] = useState(false);
 
  
 
   useEffect(() => {
-    getUserName(setUserName, setUserId);
-    //console.log('step 1');
-    getCategories(setCategories);
-    //getTags(setTags);
-    //console.log('create_collection 1 tags:', tags);
-    if (id) {
-
-      getCollections(setCollection, '/api/collectionEditView/viewCollection', id);
-      setTitle(collection.title);
-      setDescription(collection.description);
-      setImageUrl(collection.image_url);
-      setError('error loading collection data');
-      setLoading(false);
-    }
-    else {
-      setLoading(false);
-    }
+    const fetchData = async () => {
+      await getUserName(setUserName, setUserId);
+      //console.log('step 1');
+      await getCategories(setCategories);
+      //getTags(setTags);
+      //console.log('create_collection 1 tags:', tags);
     
+    
+      if (id) {
+        try{
+          //console.log('step 1', id);
+          const fullCollection = await getCollections(setCollection, '/api/collectionEditView/viewCollection', id);
+          //console.log('full: ', fullCollection);
+          //console.log('title: ', collection.title);
+          setTitle(fullCollection.title);
+          setDescription(fullCollection.description);
+          setImageUrl(fullCollection.image_url);
+          setItems(fullCollection.items);
+          setCategory(fullCollection.category);
+          setPreviewImage(fullCollection.image_url);
+          //console.log('step 2', category, imageUrl);
+        
+          setLoading(false);
+        }
+        catch(err) {
+          console.error('step 1', err);
+          setError('error loading collection data a');
+          setLoading(false);
+        }
+        
+      }
+      else {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
   }, [navigate, id]); /*, collection*/
 
   /*useEffect(() => {
@@ -80,66 +104,95 @@ const CreateCollection = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isSubmitting) return;  // Если уже идет отправка данных, выходим из функции
-
-    setIsSubmitting(true);
-    
-    console.log("submin submit...");
-
-    let uploadedImageUrl = '';
     console.log('submit imageFile:', imageFile);
-    // Загружаем изображение на Imgur, если файл выбран
-    if (imageFile) {
-        uploadedImageUrl = await uploadImageToImgur(imageFile); // Замените imageUrl на imageFile
+    
+    let uploadedImageUrl = '';
+
+    if(id){
+      if(imageUrl !== ''){
+        const res = await deleteImageFromDropbox(imageUrl);
+        if (!res) {
+          throw error('delete pict err');
+        }
+      }
     }
+    
+    if (imageFile/* && uploadNewPict === true*/) {
+      uploadedImageUrl = await uploadImageToDropbox(imageFile);
+    }
+   /* if (uploadedImageUrl === '' && imageUrl !== ''){
+      uploadedImageUrl = imageUrl;
+    }*/
+
+    console.log('get img url:', uploadedImageUrl);
 
     const formData = {
+      id,
       title,
       category,
       description,
-      imageUrl: uploadedImageUrl, // Используем URL загруженного изображения или превью
-      items // Ваши элементы с тегами
+      imageUrl: uploadedImageUrl, 
+      items: items,
     };
 
+    //console.log('formData: ', formData);
+
     try {
-      await axios.post('/api/your-endpoint', formData);
-      // Обработка успешной отправки
-      alert('Data submitted successfully');
+      const res = setNewCollection(formData);
+      /*if (res && res.data){
+        console.log('collection added: ', res.data);
+      }*/
       setIsSubmitting(false);
+      navigate(`/profile/${userId}`);
     } catch (error) {
-      console.error('Failed to submit form:', error);
-      alert('Error submitting data');
+      console.error('add collection error handleSubmit:', error);
     }
   };
 
   const handleImageUpload = (e) => {
+    
     const file = e.target.files[0];
+    console.log('handleImageUpload: ', file);
+
+    const dotFileFormat = file.name.split('.').pop();
+
+    let bufName = file.name.substring(0, file.name.lastIndexOf('.'))
+
     if (file) {
+      const bufNameSlugiFy = slugify(bufName, {
+        lower: true,
+        strict: true,
+        replacement: "_" 
+      });
+      
+      bufName = `${bufNameSlugiFy}-${Date.now()}.${dotFileFormat}`;
+
+      const rFile = new File([file], bufName, { type: file.type });
+
+      console.log('new handleImageUpload: ', rFile);
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result); // Устанавливаем превью изображения
+        setPreviewImage(reader.result); 
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(rFile);
 
-      setImageFile(file); // Сохраняем файл для дальнейшей загрузки на Imgur
+      setImageFile(rFile);
+      /*setUploadNewPict(true);*/ 
     }
   };
 
 
+
+
+  const handleCategoryChange = (e) => {
+    const userCategory = e.target.value;
+    setCategory(userCategory);
+    //console.log('userCategory:', userCategory, category); 
+  };
   
 
-  /*const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        const imageUrl = await uploadImageToImgur(file);
-        setPreviewImage(imageUrl); 
-
-      } catch (error) {
-        console.error('Failed to upload image:', error);
-      }
-    }
-  };*/
+  
 
   
 
@@ -156,6 +209,23 @@ const CreateCollection = () => {
       setTags([]); 
     }
   };
+  const handleEditItem = (item) => {
+    setNewItemName(item.name);
+    setTags(item.tags);
+  };
+
+  const handleDeleteItem = (itemId) => {    // работает прекрасно
+    console.log('step 1', itemId, items);
+    const updatedItems = items.filter(bitem => bitem.id !== itemId);
+    console.log('step 2', updatedItems, items);
+    setItems(updatedItems);
+  };
+  /*const handleDeleteItem = (item) => {   // работает плохо, почему?
+    console.log('step 1', item, items);
+    const updatedItems = items.filter(bitem => bitem.id !== item);
+    console.log('step 2', updatedItems, items);
+    setTags(updatedItems);
+  };*/
 
   if (loading) {
     return <div>Loading...</div>; 
@@ -227,9 +297,9 @@ const CreateCollection = () => {
             <div className="ms-2" style={{ flex: 1 }}>
               <label htmlFor="category" className="form-label">Category</label>
 
-              <select id="category" className="form-select" value={category} onChange={(e) => setCategory(e.target.value)} required>
+              <select id="category" className="form-select" value={category} onChange={handleCategoryChange} required>
 
-                <option value="">Select a category</option>
+                <option value="">{category === '' ? ('Select a category') : (category.name)}</option>
                 {categories?.map((cat) => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -268,11 +338,15 @@ const CreateCollection = () => {
               </div>
 
           
-              <div className="elementsContainer d-flex flex-wrap flex-column" style={{ width: '300px' }}>
+              <div className="elementsContainer d-flex flex-wrap"/* style={{ width: '300px' }}*/>
                 {items.map((item) => (
-                  <div key={item.id} className="card mt-0 mb-2" style={{ width: '100%' }}>
+                  <div key={item.id} className="card mt-0 mb-2 ms-2 me-2 itemCard" 
+                    style={{ flex: '1 1 calc(33.33% - 1rem)', boxSizing: 'border-box', cursor: 'pointer' }} onClick={() => handleEditItem(item)}>
+                    
                     <div className="card-body">
+
                       <h5 className="card-title mt-0">{item.name}</h5>
+
                       <div className="tags mt-2">
                         {item.tags.map((tag) => (
                           <span key={tag.id} className="badge bg-secondary me-2 mb-1">
@@ -281,6 +355,11 @@ const CreateCollection = () => {
                         ))}
                       </div>
                     </div>
+
+                    <div className="deleteIcon" onClick={() => handleDeleteItem(item.id)}>
+                      <img src={deleteIcon} alt="Delete" />
+                    </div>
+
                   </div>
                 ))}
               </div>

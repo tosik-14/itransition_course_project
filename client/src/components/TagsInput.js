@@ -9,7 +9,7 @@ const generateId = () => Date.now() + Math.random();
 
 const fetchTags = async () => {
   try {
-    const response = await fetch(`${apiUrl}/api/collections/tags`);
+    const response = await fetch(`${apiUrl}/api/tags`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -60,12 +60,20 @@ const TagsInput = ({ tags, setTags }) => {
     setValue('');
   };
 
-  const addCustomTag = () => {
+  const addCustomTag = (event) => {
+    event.preventDefault();
     const trimmedValue = value.trim();
     if (trimmedValue && !tags.some(tag => tag.name === trimmedValue)) {
       setTags([...tags, { id: generateId(), name: trimmedValue }]);
       setValue('');
     }
+  };
+
+  const handleDeleteTag = (tagId) => {
+    
+    const updatedTags = tags.filter(tag => tag.id !== tagId);
+    setTags(updatedTags);
+
   };
 
   const getSuggestionValue = (suggestion) => suggestion.name;
@@ -81,7 +89,7 @@ const TagsInput = ({ tags, setTags }) => {
     onKeyDown: (event) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        addCustomTag();
+        addCustomTag(event);
       }
     },
     className: 'form-control'  // Add Bootstrap classes for input styling
@@ -111,7 +119,7 @@ const TagsInput = ({ tags, setTags }) => {
       </div>
       <div className="mt-2">
         {tags.map((tag) => (
-          <span key={tag.id} className="badge bg-secondary me-2 mb-1">
+          <span key={tag.id} className="badge bg-secondary me-2 mb-1" style={{ cursor: 'pointer' }} onClick={() => handleDeleteTag(tag.id)}>
             {tag.name}
           </span>
         ))}

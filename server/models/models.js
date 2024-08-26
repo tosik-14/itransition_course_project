@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-// Модель Users
+//Users
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
@@ -33,7 +33,7 @@ const User = sequelize.define('User', {
   timestamps: false
 });
 
-// Модель Collections
+//Collections
 const Collection = sequelize.define('Collection', {
   id: {
     type: DataTypes.INTEGER,
@@ -70,7 +70,7 @@ const Collection = sequelize.define('Collection', {
   timestamps: false
 });
 
-// Модель Items
+//Items
 const Item = sequelize.define('Item', {
   id: {
     type: DataTypes.INTEGER,
@@ -93,7 +93,7 @@ const Item = sequelize.define('Item', {
   timestamps: false
 });
 
-// Модель Comments
+//Comments
 const Comment = sequelize.define('Comment', {
   id: {
     type: DataTypes.INTEGER,
@@ -124,7 +124,7 @@ const Comment = sequelize.define('Comment', {
   timestamps: false
 });
 
-// Модель Categories
+//Categories
 const Category = sequelize.define('Category', {
   id: {
     type: DataTypes.INTEGER,
@@ -140,7 +140,7 @@ const Category = sequelize.define('Category', {
   timestamps: false
 });
 
-// Модель Tags
+//Tags
 const Tag = sequelize.define('Tag', {
   id: {
     type: DataTypes.INTEGER,
@@ -156,7 +156,7 @@ const Tag = sequelize.define('Tag', {
   timestamps: false
 });
 
-// Модель Item_tags
+//Item_tags
 const ItemTag = sequelize.define('Item_tag', {
   item_id: {
     type: DataTypes.INTEGER,
@@ -178,7 +178,7 @@ const ItemTag = sequelize.define('Item_tag', {
   timestamps: false 
 });
 
-// Модель Collection_likes
+//Collection_likes
 const CollectionLike = sequelize.define('Collection_like', {
   user_id: {
     type: DataTypes.INTEGER,
@@ -200,8 +200,8 @@ const CollectionLike = sequelize.define('Collection_like', {
   timestamps: false 
 });
 
-// Определение ассоциаций
-User.hasMany(Collection, { foreignKey: 'user_id', as: 'ownedCollections' });
+
+User.hasMany(Collection, { foreignKey: 'user_id', as: 'owner' });
 User.hasMany(Comment, { foreignKey: 'user_id' });
 User.belongsToMany(Collection, { through: CollectionLike, foreignKey: 'user_id', as: 'likedCollections' });
 
@@ -215,11 +215,13 @@ Comment.belongsTo(User, { foreignKey: 'user_id' });
 Comment.belongsTo(Collection, { foreignKey: 'collection_id' });
 
 Item.belongsTo(Collection, { foreignKey: 'collection_id' });
+
 Item.belongsToMany(Tag, { through: ItemTag, foreignKey: 'item_id' });
+Tag.belongsToMany(Item, { through: ItemTag, foreignKey: 'tag_id' });
 
 Category.hasMany(Collection, { foreignKey: 'category_id' });
 
-Tag.belongsToMany(Item, { through: ItemTag, foreignKey: 'tag_id' });
+
 
 
 

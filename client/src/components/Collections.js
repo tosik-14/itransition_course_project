@@ -5,10 +5,12 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
 
-import { getUserName, getCollections, getLike } from './utility';
+import { getUserName, getCollections, getLike, getTags } from './utility';
 
 import logo_light from '../images/logo_light.jpg'
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
+import CollectionMainContent from './main_content/CollectionMainContent';
 
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -20,11 +22,15 @@ const Collections = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [collections, setCollections] = useState([]);
+  const [collectionMain, setCollectionMain] = useState(true);
+
+  const [tags, setTags] = useState([]);
 
   useEffect(() => {
   
     getUserName(setUserName, setUserId);
-    getCollections(setCollections, '/api/collections', null);
+    getCollections(setCollections, '/api/collections/top5', null);
+    getTags(setTags);
   }, [navigate, isLiked, likesCount]);
 
   const handleLogin = () => {
@@ -91,91 +97,28 @@ const Collections = () => {
       
       </div>
 
-      {/*<div className="container mt-5">
-        <div className="d-flex justify-content-between align-items-center">
-          <h2>Top 5 collections</h2>
+      
+      <div className="container mt-5">
+        <div className="d-flex align-items-center mb-3">
+          
+            <h2>Top 5 collections</h2>
           
         </div>
 
-        
-        <ul className="list-group">
-          {collections.map(collection => (
-            
-            <li key={collection.id} className="list-group-item col-md-4 mb-4 collectionCard p-0">
 
-              <Link to={`/collections/${collection.id}`} className="linkToCollection" style={{ textDecoration: 'none' }}>
+        {collectionMain ? (
+          <CollectionMainContent
+            collections={collections}
+            toggleLike={toggleLike}
+            handleComment={handleComment}
+          />
+        ) : (
+          <LogoutButton /> 
+        )}
 
-                <div className="img_container">
-                  {collection.image_url && (<img src={collection.image_url} alt={collection.title}/>)}
-                </div>
 
-                <div className="d-flex justify-content-between">
-
-                  <div>
-                    <h4 className="cardHeader mt-1 ms-2 mb-0 pb-0" style={{ marginBottom: '0' }}>{collection.title}</h4>
-                    <p className="itemsNum text-muted ms-2 ">
-                      items in collection: {collection.itemCount}
-                    </p>
-                  </div>
-
-                  <div className="d-flex me-1 align-items-center">
-                  
-                    <button className="btn" onClick={handleComment} style={{ border: 'none' }}>
-                      <i className="bi bi-chat fs-2 text-dark"></i>
-                    </button>
-                    <button className="btn justify-content-center align-items-center" onClick={(e) => toggleLike(e, collection.id)} style={{ border: 'none' }}>
-                      <i className={`bi ${collection.isLiked ? 'bi-heart-fill text-danger' : 'bi-heart text-dark'} fs-2`}></i> 
-                    </button>
-                    <span className="ms-0"><p className="likeCounter mb-0 me-2">{collection.likesCount}</p></span>
-                  </div>
-
-                </div>
-
-              </Link>
-
-            </li>
-
-          ))}
-        </ul>
-      </div>*/}
-      <div className="container mt-5">
-        <div className="d-flex justify-content-between align-items-center">
-          <h2>Top 5 collections</h2>
-        </div>
-
-        <div className="row g-5">
-          {collections.map(collection => (
-            <div key={collection.id} className="col-md-4 mb-5"> {/* Вы можете изменить ширину, например, на col-md-3 или col-lg-4 */}
-              <div className="list-group-item collectionCard p-0 me-4 mb-5">
-                <Link to={`/collections/${collection.id}`} className="linkToCollection" style={{ textDecoration: 'none' }}>
-                  <div className="img_container">
-                    {collection.image_url && (<img src={collection.image_url} alt={collection.title} style={{ width: '100%', height: 'auto' }}/>)}
-                  </div>
-
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <h4 className="cardHeader mt-1 ms-2 mb-0 pb-0" style={{ marginBottom: '0' }}>{collection.title}</h4>
-                      <p className="itemsNum text-muted ms-2 ">
-                        items in collection: {collection.itemCount}
-                      </p>
-                    </div>
-
-                    <div className="d-flex me-1 align-items-center">
-                      <button className="btn" onClick={handleComment} style={{ border: 'none' }}>
-                        <i className="bi bi-chat fs-2 text-dark"></i>
-                      </button>
-                      <button className="btn justify-content-center align-items-center" onClick={(e) => toggleLike(e, collection.id)} style={{ border: 'none' }}>
-                        <i className={`bi ${collection.isLiked ? 'bi-heart-fill text-danger' : 'bi-heart text-dark'} fs-2`}></i> 
-                      </button>
-                      <span className="ms-0"><p className="likeCounter mb-0 me-2">{collection.likesCount}</p></span>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
+
 
     </div>
   );

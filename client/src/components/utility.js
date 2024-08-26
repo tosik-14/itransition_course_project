@@ -1,6 +1,7 @@
 import axios from 'axios';
 const apiUrl = process.env.REACT_APP_API_URL;
 
+
 export const getUserName = async(setUserName, setUserId) => {
 	const token = localStorage.getItem('token');
 	if(token){
@@ -128,11 +129,29 @@ export const getCategories = async(setCategories) => {
   }
 };
 
+
+
+
 export const getTags = async(setTags) => {
   //console.log('step 1');
   try{
-    const responce = await axios.get(`${apiUrl}/api/collections/tags`);
+    const responce = await axios.get(`${apiUrl}/api/tags`);
     setTags(responce.data);
+    //console.log('step 1 gettags: ', responce.data);
+    return responce;
+  }
+  catch (error){
+    console.error('error to fetch tags: ', error);
+  }
+};
+
+export const getPopularTags = async(quantity) => {
+  console.log('step 1', quantity);
+  try{
+    const responce = await axios.get(`${apiUrl}/api/tags/popular`, {
+      params: { quantity } 
+    });
+    
     //console.log('step 1 gettags: ', responce.data);
     return responce;
   }
@@ -144,29 +163,163 @@ export const getTags = async(setTags) => {
 
 
 
-const IMGUR_CLIENT_ID = process.env.REACT_APP_IMGUR_CLIENT_ID; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
-
-export const uploadImageToImgur = async (imageFile, retryCount = 3) => {
-    const formData = new FormData();
-    formData.append('image', imageFile);
-    console.log('utility step 1', imageFile);
-    try {
-      const response = await axios.post('https://api.imgur.com/3/image', formData, {
-          headers: { Authorization: `Client-ID ${IMGUR_CLIENT_ID}`, },
-        });
-        console.log('utility step 2', response.data.data.link);
-        
-        return response.data.data.link;
-    } catch (error) {
-        
-        if (error.response?.status === 429 && retryCount > 0) {
-            console.log('Rate limit exceeded, retrying in 15 seconds...');
-            await new Promise(resolve => setTimeout(resolve, 15000)); // Ожидание 15 секунд перед повторной попыткой
-            return uploadImageToImgur(imageFile, retryCount - 1); // Повторная попытка
-        } else {
-            console.error('error to upload image on imgur:', error);
-            throw error;
-        }
+export const setNewCollection = async(formData) => {
+  const token = localStorage.getItem('token');
+  //console.log('step 1');
+  if(token){
+    try{
+      //console.log('step 2', formData);
+      const responce = await axios.post(`${apiUrl}/api/collections/create`, formData,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      //console.log('step 3');
+      return responce;
     }
+    catch (error){
+      console.error('error add collection: ', error);
+    }
+  }
 };
+
+
+
+
+
+export const uploadImageToDropbox = async (imageFile) => {
+  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
+  const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
+  
+  const formData = new FormData();
+  formData.append('file', imageFile);
+
+  console.log('utility step 1', imageFile);
+
+  
+  try {
+
+    const headers = {
+      //'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
+      'Authorization': `Bearer ${buftoken}`,
+      'Dropbox-API-Arg': JSON.stringify({
+        path: `/itransition_course_project/${imageFile.name}`,
+        mode: 'add',
+        autorename: true,
+        mute: false,
+        strict_conflict: false,
+      }),
+      'Content-Type': 'application/octet-stream'
+    };
+
+    console.log('headers:', headers);
+
+    const responсe = await axios.post('https://content.dropboxapi.com/2/files/upload', imageFile,  
+      { headers } 
+    );
+
+    console.log('utility step 3:', responсe.data);
+    //return responсe.data;
+
+
+
+    const responceLink = await axios.post('https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
+      { path: `/itransition_course_project/${imageFile.name}`, },
+      { headers: {
+          //'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
+          'Authorization': `Bearer ${buftoken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    
+    //console.log('utility step 4:', responceLink.data.url);
+    let linkToPict = responceLink.data.url;
+    //console.log('link ver 1:', linkToPict);
+    const resultLink = linkToPict.replace(/dl=0$/, 'raw=1');
+    //console.log('link ver 2:', resultLink);
+    return resultLink;
+    
+  } catch (error) {
+    console.error('error uploading image to dropbox :(:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
+
+
+
+export const deleteImageFromDropbox = async (imageUlr) => {
+  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
+  const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
+
+  const headers = {
+    'Authorization': `Bearer ${buftoken}`,
+    'Content-Type': 'application/json'
+  };
+
+  console.log('link default:', imageUlr);
+
+  const data = {
+    "url": imageUlr
+  };
+
+  let filePath;
+  try{
+    const response = await axios.post('https://api.dropboxapi.com/2/sharing/get_shared_link_metadata', data, { headers });
+    filePath = response.data.path_lower;
+
+    console.log('filePath: ', filePath);
+  }
+  catch(err){
+    console.error('error fetching filePath ', err);
+    throw err;
+  }
+
+  if(filePath){
+
+    const path = {
+      "path": filePath
+    };
+
+    try{
+      const res = await axios.post('https://api.dropboxapi.com/2/files/delete_v2', path, { headers });
+      console.log('file deleted', res.data);
+      return res;
+    }
+    catch(err){
+      console.error('delete file error ', err);
+      throw err;
+    }
+
+  }
+
+};
+
+
+
+
+export const deleteCollection = async(supId) => {
+  const token = localStorage.getItem('token');
+  //console.log('step 1');
+  if(token){
+    try{
+      console.log('step 2', supId);
+      const responce = await axios.post(`${apiUrl}/api/collections/delete`, { supId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      //console.log('step 3');
+      return responce;
+    }
+    catch (error){
+      console.error('error delete collection: ', error);
+    }
+  }
+};
+
+
+
+
+
+
 

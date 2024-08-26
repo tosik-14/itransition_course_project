@@ -5,46 +5,69 @@ body {
   margin-top: 50px;
 }
 
-.list-group{
+.list-group {
   padding: 0;
   margin: 0;
-  border: none;
+  /*border: none;*/
 }
 
-.list-group-item{
-  /*width: 400px;
-  height: 465px;*/
+.list-group-item {
+  padding: 0;
+  /*border: none; */
 }
 
-.collectionCard{
-  width: 400px;
-  height: 465px;
-  /*margin-bottom: 200px;*/
+.collectionCard {
+  width: 100%; 
+  max-width: 400px; 
+  height: 465px; 
+  border: 1px solid #cfcfcf !important; 
+  border-radius: 8px !important; 
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
 }
 
+
+.img_container {
+  flex-shrink: 0; 
+}
 
 .linkToCollection {
   display: block;
-  cursor: default;
+  text-decoration: none;
+  height: 100%;
 }
 
-.img_container{
+
+.img_container {
+  width: 100%; 
+  height: 400px; 
+  background-color: #222222; 
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  overflow: hidden; 
+  padding: 0;
+  margin: 0;
+  /*border: none;*/
+}
+
+
+.img_container img {
+  /*width: 100%; 
+  height: 100%; */
+  object-fit: cover;
+  /*display: block;*/
+}
+
+.img_containerCP{
   background-color: #222222;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   margin: 0;
-  border: none;
-}
-
-.img_container img{
-  width: 400px;
-  height: 400px; 
-  object-fit: cover;
-  padding: 0;
-  margin: 0;
-  border: none; 
+  /*border: none;*/
 }
 
 .likeCounter {
@@ -58,10 +81,10 @@ body {
 
 .cardHeader {
   color: black;
-  display: flex; /* Убедитесь, что размер элемента соответствует содержимому */
+  display: flex; 
   margin: 0;
   padding: 0;
-  width: auto; /* По умолчанию ширина авто, если нет необходимости в фиксированной ширине */
+  width: auto; 
   height: auto;
 }
 
@@ -85,4 +108,29 @@ body {
 
 .linkToProfileVC {
   cursor: pointer;
+}
+
+
+.itemCard {
+  position: relative; 
+  overflow: hidden; 
+}
+
+.deleteIcon {
+  position: absolute;
+  top: 50%;
+  right: 10px; 
+  transform: translateY(-50%); 
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
+  z-index: 10; 
+}
+
+.itemCard:hover .deleteIcon {
+  opacity: 0.3; 
+}
+
+.deleteIcon img {
+  width: 60px; 
+  height: 60px; 
 }
