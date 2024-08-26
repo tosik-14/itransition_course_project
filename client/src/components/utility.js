@@ -187,7 +187,7 @@ export const setNewCollection = async(formData) => {
 
 export const uploadImageToDropbox = async (imageFile) => {
   const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
-  const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
+  //const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
   
   const formData = new FormData();
   formData.append('file', imageFile);
@@ -198,8 +198,8 @@ export const uploadImageToDropbox = async (imageFile) => {
   try {
 
     const headers = {
-      //'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
-      'Authorization': `Bearer ${buftoken}`,
+      'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
+      //'Authorization': `Bearer ${buftoken}`,
       'Dropbox-API-Arg': JSON.stringify({
         path: `/itransition_course_project/${imageFile.name}`,
         mode: 'add',
@@ -224,8 +224,8 @@ export const uploadImageToDropbox = async (imageFile) => {
     const responceLink = await axios.post('https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
       { path: `/itransition_course_project/${imageFile.name}`, },
       { headers: {
-          //'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
-          'Authorization': `Bearer ${buftoken}`,
+          'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
+          //'Authorization': `Bearer ${buftoken}`,
           'Content-Type': 'application/json'
         }
       }
@@ -251,10 +251,11 @@ export const uploadImageToDropbox = async (imageFile) => {
 
 export const deleteImageFromDropbox = async (imageUlr) => {
   const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
-  const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
+  //const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
 
   const headers = {
-    'Authorization': `Bearer ${buftoken}`,
+    'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
+    //'Authorization': `Bearer ${buftoken}`,
     'Content-Type': 'application/json'
   };
 
