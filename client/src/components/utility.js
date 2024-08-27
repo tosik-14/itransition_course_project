@@ -186,9 +186,10 @@ export const setNewCollection = async(formData) => {
 
 
 export const uploadImageToDropbox = async (imageFile) => {
-  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
-  //const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
-  
+  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client 
+  //const buftoken = 'sl.B7vh5kHysETxW0Y3-SK5KfoGq_OLzS03ly_ZEh7n3iwqTFllGUr1pFjefXfv2RMtZEXrt2WqJE9bYmYmZVK-czM-gi8sqqwFL1xmGm8yTjvFBUYipV5nY77zd4yhyECxOzIJcYpXpeiz1WQ';
+  console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
+
   const formData = new FormData();
   formData.append('file', imageFile);
 
@@ -250,9 +251,10 @@ export const uploadImageToDropbox = async (imageFile) => {
 
 
 export const deleteImageFromDropbox = async (imageUlr) => {
-  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client secret 715896c8a097121261f9fce4a38628cb72e82cb1 
-  //const buftoken = 'sl.B7qrv7D-CIpqm1Lf7bH8rY98NfzRzScW7VnBVQ15Y_9Z3cP05oB1Vie9EH_KbRasZ6g6xpORp1TZSHejGw1lpX8gY60GJ7C8txNQPN5oRdn-34lG5kK6RXy6EG3pHll_7OkgGuW13PLbY3w';
-
+  const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; 
+  //const buftoken = '';
+  console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
+  
   const headers = {
     'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
     //'Authorization': `Bearer ${buftoken}`,
@@ -292,7 +294,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
       console.error('delete file error ', err);
       throw err;
     }
-    
+
   }
 
 };

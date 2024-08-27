@@ -138,7 +138,14 @@ const CollectionPage = () => {
           </Link>
           </span>
           
-
+          <div className="d-flex justify-content-start me-2">
+              <button className="btn btn-primary me-2" onClick={handleEditCollection}>
+                Edit
+              </button>
+              <button className="btn btn-danger" onClick={handleDeleteCollection}>
+                Delete
+              </button>
+            </div>
 
           {userId === collection.user?.id || userRole === 'admin' && (
             <div className="d-flex justify-content-start me-2">
