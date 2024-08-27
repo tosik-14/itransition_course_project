@@ -13,9 +13,9 @@ const CloudTags = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        console.log('step 1');
+        //console.log('step 1');
         const res = await getPopularTags(quantity);
-        console.log('fetched tags:', res.data);  // Лог данных после их получения
+        //console.log('fetched tags:', res.data);  // Лог данных после их получения
         setTags(res.data || []);  // Защита от undefined
       } catch (err) {
         console.error('Error fetching tags:', err); // Лог ошибки
@@ -26,7 +26,7 @@ const CloudTags = () => {
     };
 
     fetchTags();
-    console.log('cloud tags: ',tags);
+    //console.log('cloud tags: ',tags);
   }, []);
 
 

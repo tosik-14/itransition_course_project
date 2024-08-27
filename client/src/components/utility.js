@@ -254,7 +254,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
   const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; 
   //const buftoken = '';
   console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
-  
+
   const headers = {
     'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
     //'Authorization': `Bearer ${buftoken}`,

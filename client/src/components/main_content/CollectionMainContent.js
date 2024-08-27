@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CloudTags from './CloudTags';
 
-const CollectionList = ({ collections, toggleLike, handleComment, tags }) => {
+
+const CollectionList = ({ collections, toggleLike, handleComment }) => {
   return (
-    <div> 
+    
 
-      <CloudTags tags={tags} />
+      
 
       <div className="row g-1">
         {collections.map((collection) => (
@@ -63,7 +63,7 @@ const CollectionList = ({ collections, toggleLike, handleComment, tags }) => {
       </div>
 
 
-    </div>
+    
   );
 };
 
