@@ -47,6 +47,38 @@ const getCollectionCards = async () => {
 };
 
 
+const getCollectionsToFilter = async () => {
+  return await Collection.findAll({
+    attributes: [
+      'id',
+      'title',
+      'image_url',
+      [sequelize.literal(`(SELECT COUNT(*) FROM Items WHERE Items.collection_id = Collection.id)`), 'itemsCount']
+    ],
+    include: [
+      {
+        model: Category,
+        attributes: ['id', 'name']
+      },
+      {
+        model: User,
+        as: 'likedByUsers',
+        attributes: ['id'],
+        through: { attributes: [] }
+      },
+      {
+        model: Item,
+        attributes: ['id'],
+        include: [
+          {
+            model: Tag,
+            attributes: ['name']
+          }
+        ]
+      }
+    ],
+  });
+}
 
 
 
@@ -54,4 +86,5 @@ const getCollectionCards = async () => {
 module.exports = {
   getCollectionCards,
   getUserId,
+  getCollectionsToFilter,
 };

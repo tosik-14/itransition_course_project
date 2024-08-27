@@ -5,13 +5,14 @@ const { Op, DataTypes } = require('sequelize');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { Collection, Item, User, CollectionLike, Category, Tag, ItemTag, Comment } = require('../models/models');
-const { getCollectionCards, getUserId } = require('./utility');
+const { getCollectionCards, getUserId, getCollectionsToFilter } = require('./utility');
 
 
 router.get('/', async (req, res) => {
   const currentUserId = getUserId(req, process.env.JWT_KEY);
-
+  
   try {
+
     const collections = await getCollectionCards();
 
     const answer = collections.map(collection => {
@@ -34,7 +35,42 @@ router.get('/', async (req, res) => {
 });
 
 
+router.get('/collectionsFilter', async (req, res) => {
+  const currentUserId = getUserId(req, process.env.JWT_KEY);
 
+
+  try {
+
+    const collections = await getCollectionsToFilter();
+
+    if(collections) {
+      collections.reverse();
+    }
+
+    const answer = collections.map(collection => {
+      const likesCount = collection.likedByUsers.length;
+      const isLiked = currentUserId ? collection.likedByUsers.some(user => user.id == currentUserId) : false;
+
+
+      const tags = collection.Items.flatMap(item => item.Tags ? item.Tags.map(tag => tag.name) : []);
+
+      //console.log('tags', tags);
+
+      return {
+        ...collection.toJSON(),
+        likesCount,
+        isLiked,
+        itemCount: collection.get('itemsCount'),
+        tags 
+      };
+    });
+
+    res.json(answer);
+  } catch (error) {
+    console.error('Error fetching collections:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 
 
