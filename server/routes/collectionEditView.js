@@ -12,10 +12,16 @@ router.get('/viewCollection', async (req, res) => {
   let currentUserId = null;
 
   if (token) {
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
-    currentUserId = decoded.userId;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      currentUserId = decoded.userId;
+    } catch (err) {
+      console.log('unauthenticated user');
+    }
   }
+
   //console.log('step 1 supId - userId', collectionId, currentUserId); // ?  collectionId
+
   try {
     const collection = await Collection.findOne({
       where: { id: collectionId },

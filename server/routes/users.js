@@ -174,6 +174,39 @@ router.get('/nameById', async (req, res) => {
   }
 });
 
+router.get('/EmailById', async (req, res) => {
+  try {
+    const currentUserId = req.query.id;
+    //console.log('emailById, currentUserId: ', currentUserId);
+    const user = await User.findByPk(currentUserId, { attributes: ['email'] });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.send({ email: user.email });
+  } catch (err) {
+    res.status(500).send('Server error email');
+  }
+});
+
+
+router.post('/setToken', async (req, res) => {
+
+  const { id, token } = req.body;
+  console.log('currentUserId, token: ', id, token);
+
+  try {
+    await User.update({ api_token: token }, { where: { id: id } });
+    
+    res.status(201);
+  } catch (err) {
+    console.error('Server error update token: ', err);
+    res.status(500).send('Server error update token');
+  }
+});
+
+
+
+
 
 router.post('/block', async (req, res) => {
   const currentUserId = getUserId(req, process.env.JWT_KEY);

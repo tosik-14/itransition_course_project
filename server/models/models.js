@@ -28,6 +28,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(50),
     defaultValue: 'active',
     allowNull: false
+  },
+  salesforceId: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  api_token: { 
+    type: DataTypes.STRING(255),
+    allowNull: true
   }
 }, {
   timestamps: false

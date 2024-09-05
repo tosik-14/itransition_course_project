@@ -76,7 +76,7 @@ router.get('/collectionsFilter', async (req, res) => {
 
 router.get('/top5', async (req, res) => {
   const currentUserId = getUserId(req, process.env.JWT_KEY);
-
+  console.log('step 1');
   try {
     const collections = await getCollectionCards();
 
