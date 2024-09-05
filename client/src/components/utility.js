@@ -52,6 +52,38 @@ export const getProfileName = async(id, setCollectionOwnerName) => {
   
 };
 
+export const getProfileEmail = async(id, setEmail) => {
+  //console.log('getProfileEmail step 1', id);
+  try{
+    const responce = await axios.get(`${apiUrl}/api/users/EmailById`, { 
+      params: { id } 
+    });
+    setEmail(responce.data.email);
+    //console.log('getProfileEmail step 2', responce.data.email)
+    return responce.data.email;
+  }
+  catch (error){
+    console.error('error fetch profile email: ', error);
+  }
+  
+};
+
+export const setProfileToken = async(id, token) => {
+  //console.log('getProfileToken step 1', id, token);
+  try{
+    const responce = await axios.post(`${apiUrl}/api/users/setToken`,  
+      { id, token } 
+    );
+    //set(responce.data.token);
+    //console.log('getProfileToken step 2', responce.data.token)
+    return responce.data.token;
+  }
+  catch (error){
+    console.error('error fetch profile token: ', error);
+  }
+  
+};
+
 
 
 export const getCollections = async(setCollections, path, supId) => {
@@ -63,9 +95,25 @@ export const getCollections = async(setCollections, path, supId) => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}`},
         params: { supId }
       });
-      setCollections(responce.data);
 
       //console.log('collections: ', responce.data);
+      setCollections(responce.data);
+      
+      return responce.data;
+    }
+    catch (error){
+      console.error('error get collections: ', error);
+    }
+  } else {
+    try{
+      const responce = await axios.get(`${apiUrl}${path}`, { 
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`},
+        params: { supId }
+      });
+
+      //console.log('collections: ', responce.data);
+      setCollections(responce.data);
+      
       return responce.data;
     }
     catch (error){
@@ -146,7 +194,7 @@ export const getTags = async(setTags) => {
 };
 
 export const getPopularTags = async(quantity) => {
-  console.log('step 1', quantity);
+  //console.log('step 1', quantity);
   try{
     const responce = await axios.get(`${apiUrl}/api/tags/popular`, {
       params: { quantity } 
@@ -187,13 +235,13 @@ export const setNewCollection = async(formData) => {
 
 export const uploadImageToDropbox = async (imageFile) => {
   const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; //client 
-  //const buftoken = 'sl.B7vh5kHysETxW0Y3-SK5KfoGq_OLzS03ly_ZEh7n3iwqTFllGUr1pFjefXfv2RMtZEXrt2WqJE9bYmYmZVK-czM-gi8sqqwFL1xmGm8yTjvFBUYipV5nY77zd4yhyECxOzIJcYpXpeiz1WQ';
-  console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
+  //const buftoken = '';
+  //console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
 
   const formData = new FormData();
   formData.append('file', imageFile);
 
-  console.log('utility step 1', imageFile);
+  //console.log('utility step 1', imageFile);
 
   
   try {
@@ -211,13 +259,13 @@ export const uploadImageToDropbox = async (imageFile) => {
       'Content-Type': 'application/octet-stream'
     };
 
-    console.log('headers:', headers);
+    //console.log('headers:', headers);
 
     const responсe = await axios.post('https://content.dropboxapi.com/2/files/upload', imageFile,  
       { headers } 
     );
 
-    console.log('utility step 3:', responсe.data);
+    //console.log('utility step 3:', responсe.data);
     //return responсe.data;
 
 
@@ -253,7 +301,7 @@ export const uploadImageToDropbox = async (imageFile) => {
 export const deleteImageFromDropbox = async (imageUlr) => {
   const DROPBOX_API_TOKEN = process.env.REACT_APP_DROPBOX_API_TOKEN; 
   //const buftoken = '';
-  console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
+  //console.log('utility DROPBOX_API_TOKEN', DROPBOX_API_TOKEN);
 
   const headers = {
     'Authorization': `Bearer ${DROPBOX_API_TOKEN}`,
@@ -261,7 +309,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
     'Content-Type': 'application/json'
   };
 
-  console.log('link default:', imageUlr);
+  //console.log('link default:', imageUlr);
 
   const data = {
     "url": imageUlr
@@ -272,7 +320,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
     const response = await axios.post('https://api.dropboxapi.com/2/sharing/get_shared_link_metadata', data, { headers });
     filePath = response.data.path_lower;
 
-    console.log('filePath: ', filePath);
+    //console.log('filePath: ', filePath);
   }
   catch(err){
     console.error('error fetching filePath ', err);
@@ -287,7 +335,7 @@ export const deleteImageFromDropbox = async (imageUlr) => {
 
     try{
       const res = await axios.post('https://api.dropboxapi.com/2/files/delete_v2', path, { headers });
-      console.log('file deleted', res.data);
+      //console.log('file deleted', res.data);
       return res;
     }
     catch(err){
@@ -307,7 +355,7 @@ export const deleteCollection = async(supId) => {
   //console.log('step 1');
   if(token){
     try{
-      console.log('step 2', supId);
+      //console.log('step 2', supId);
       const responce = await axios.post(`${apiUrl}/api/collections/delete`, { supId },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );

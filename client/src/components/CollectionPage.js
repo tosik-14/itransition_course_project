@@ -88,6 +88,7 @@ const CollectionPage = () => {
   };
 
   if (!collection) {
+    //console.log('step 1', userId, userRole);
     return <div>Loading...</div>; 
   }
 
@@ -147,7 +148,7 @@ const CollectionPage = () => {
               </button>
             </div>
 
-          {userId === collection.user?.id || userRole === 'admin' && (
+          {(userId != null && (userId === collection.user?.id || userRole === 'admin')) && (
             <div className="d-flex justify-content-start me-2">
               <button className="btn btn-primary me-2" onClick={handleEditCollection}>
                 Edit

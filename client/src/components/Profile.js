@@ -7,6 +7,9 @@ import LogoutButton from './LogoutButton';
 import logo_light from '../images/logo_light.jpg'
 import { getUserName, getUserRole, getLike, getCollections, getProfileName } from './utility';
 
+import ProfileSalesforceForm from './ProfileSalesforceForm';
+import ProfileApiMessageBox from './ProfileApiMessageBox';
+
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -24,6 +27,9 @@ const Collections = () => {
   const [collections, setCollections] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
+  const [showForm, setShowForm] = useState(false);
+  const [showApi, setShowApi] = useState(false);
 
   useEffect(() => {
     const supFunc = async() => {
@@ -84,6 +90,23 @@ const Collections = () => {
     }
   };
 
+  const handleOpenForm = () => {
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+  };
+
+  const handleShowApi = () => {
+    setShowApi(true);
+  };
+
+  const handleHideApi = () => {
+    setShowApi(false);
+  };
+
+
   if (loading) {
     return <div>Loading...</div>; 
   }
@@ -100,23 +123,39 @@ const Collections = () => {
               <img src={logo_light} alt="Unblock" style={{ width: '350px' }} />
             </button>
         </div>
-        <div className="d-flex justify-content-end align-items-start"> 
-          <div className="d-flex align-items-center">
-            {userName ? (
-              <>
-              	{userRole == 'admin' && (
-              		<button className="btn btn-secondary me-2" onClick={handleDashboard}>Admin</button>
-              	)}
-                <button className="btn btn-primary me-3" onClick={handleProfile}>{userName}</button>
-                <LogoutButton />
-              </>
-            ) : (
-              <button className="btn btn-primary me-2" onClick={handleLogin}>Log In</button>
-            )}
-            
+
+        <>
+
+          <div className="d-flex justify-content-end align-items-start"> 
+            <div className="d-flex align-items-center">
+              {userName ? (
+                <>
+                	{userRole == 'admin' && (
+                    <>
+                  		<button className="btn btn-secondary me-3" onClick={handleDashboard}>Admin</button>
+                      <button className="btn btn-success me-2" onClick={handleOpenForm}>Salesforce</button>
+                      <button className="btn btn-success me-3" onClick={handleShowApi}>API</button>
+                    </>
+                	)}
+                  <button className="btn btn-primary me-3" onClick={handleProfile}>{userName}</button>
+
+                  <LogoutButton />
+                </>
+              ) : (
+                <button className="btn btn-primary me-2" onClick={handleLogin}>Log In</button>
+              )}
+              
+            </div>
           </div>
-        </div>
-      
+
+          {showForm && 
+            <ProfileSalesforceForm profileId={profileId} show={showForm} handleClose={handleCloseForm} />
+          }
+          {showApi && 
+            <ProfileApiMessageBox profileId={profileId} show={showApi} handleClose={handleHideApi} />
+          }
+        </>
+
       </div>
 
       
